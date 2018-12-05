@@ -3,6 +3,7 @@ package com.bittech.util;
 import java.io.File;
 import java.io.FileFilter;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -10,8 +11,8 @@ import java.util.List;
 /**
  * 文件处理工具
  * <p>
- * Author: secondriver
- * Created: 2018/10/13
+ * Author: cottonrose
+ * Created: 2018/12/05
  */
 public final class FileUtil {
     
@@ -25,7 +26,10 @@ public final class FileUtil {
      * @return 是否为Windows环境
      */
     public static boolean isWindows() {
-        //TODO
+        String c = File.separator;
+        if(c!="/"){
+            return true;
+        }
         return false;
     }
     
@@ -37,7 +41,12 @@ public final class FileUtil {
      * @return 文件列表（包含目录）
      */
     public static File[] ls(String path) {
-        //TODO
+        File file = Paths.get(path).toFile();
+        if(file.exists() && file.isDirectory()){
+            File[] files = file.listFiles();
+            return files;
+        }
+        System.out.println("该路径不是普通文件的路径");
         return null;
     }
     
@@ -48,7 +57,15 @@ public final class FileUtil {
      * @return 是否为空
      */
     public static boolean isDirEmpty(Path dirPath) {
-        //TODO
+        File file = dirPath.toFile();
+        if(file.exists()){
+            File[] files = file.listFiles();
+            if(files.length==0){
+                return true;
+            }
+        }else{
+            System.out.println("文件不存在！");
+        }
         return false;
     }
     
