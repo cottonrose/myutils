@@ -2,6 +2,8 @@ package com.bittech.util;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ public final class FileUtil {
     
     private FileUtil() {
     }
-    
+
     /**
      * 是否为Windows环境
      *
@@ -76,8 +78,13 @@ public final class FileUtil {
      * @return 绝对路径
      */
     public static String getAbsolutePath(File file) {
-        //TODO
-        return null;
+        String path = null;
+        if(file.exists()){
+            path = file.getAbsolutePath();
+        }else{
+            System.out.println("文件不存在");
+        }
+        return path;
     }
     
     /**
@@ -88,11 +95,17 @@ public final class FileUtil {
      * @return 是否已经是绝对路径
      */
     public static boolean isAbsolutePath(String path) {
-        //TODO
-        return false;
+        File file = Paths.get(path).toFile();
+        if(!file.exists()){
+            System.out.println("文件不存在！");
+            return false;
+        }
+        return file.isAbsolute();
     }
-    
-    
+
+
+
+
     /**
      * 递归遍历目录以及子目录中的所有文件<br>
      * 如果提供file为文件，直接返回过滤结果
@@ -102,8 +115,23 @@ public final class FileUtil {
      * @return 文件列表
      */
     public static List<File> loopFiles(String path, FileFilter fileFilter) {
-        //TODO
-        return new ArrayList<>();
+        File file = Paths.get(path).toFile();
+        ArrayList<File> files = new ArrayList<>();
+        if(file.exists()){
+            if(fileFilter.accept(file)){  //如果该路径是一个文件
+                files.add(file);
+                System.out.println("1.");
+            }
+            if(file.isDirectory()){
+                File[] files1 = file.listFiles();
+                for(File file1:files){
+                    files.addAll(loopFiles(String.valueOf(file1), File::isFile));
+                }
+            }
+        }else{
+            System.out.println("文件不存在");
+        }
+        return files;
     }
     
     
@@ -137,7 +165,18 @@ public final class FileUtil {
         //TODO
         return false;
     }
-    
+
+    /**
+     * 是否存在匹配文件
+     *
+     * @param directory 文件夹路径
+     * @param regexp    文件夹中所包含文件名的正则表达式
+     * @return 如果存在匹配文件返回true
+     */
+    public static boolean exist(String directory, String regexp) {
+        //TODO
+        return false;
+    }
     
     /**
      * 指定文件最后修改时间
@@ -237,8 +276,19 @@ public final class FileUtil {
         //TODO
         return false;
     }
-    
-    
+
+    /**
+     * 通过JDK7+的 {@link Files#copy(Path, Path, CopyOption...)} 方法拷贝文件
+     *
+     * @param src  源文件
+     * @param dest 目标文件或目录，如果为目录使用与源文件相同的文件名
+     * @return 目标文件
+     */
+    public static File copyFile(File src, File dest) {
+        //TODO
+        return null;
+    }
+
     /**
      * 移动文件或者目录
      *
@@ -275,8 +325,22 @@ public final class FileUtil {
         //TODO
         return null;
     }
-    
-    
+
+    /**
+     * 比较两个文件内容是否相同<br>
+     * 首先比较长度，长度一致再比较内容<br>
+     * 此方法来自Apache Commons io
+     *
+     * @param file1 文件1
+     * @param file2 文件2
+     * @return 两个文件内容一致返回true，否则false
+     */
+    public static boolean contentEquals(File file1, File file2) {
+        //TODO
+        return false;
+    }
+
+
     /**
      * 文件路径是否相同<br>
      * 取两个文件的绝对路径比较，在Windows下忽略大小写，在Linux下不忽略。
@@ -289,7 +353,21 @@ public final class FileUtil {
         //TODO
         return false;
     }
-    
+
+    /**
+     * 检查两个文件是否是同一个文件<br>
+     * 所谓文件相同，是指File对象是否指向同一个文件或文件夹
+     *
+     * @param file1 文件1
+     * @param file2 文件2
+     * @return 是否相同
+     * @throws RuntimeException IO异常
+     * @see Files#isSameFile(Path, Path)
+     */
+    public static boolean equals(File file1, File file2) {
+        //TODO
+        return false;
+    }
     
     /**
      * 获取文件扩展名，扩展名不带“.”
@@ -318,6 +396,21 @@ public final class FileUtil {
      * @return 路径File，如果不存在返回null
      */
     public static File getParent(File file, int level) {
+        //TODO
+        return null;
+    }
+
+    /**
+     * 检查父完整路径是否为自路径的前半部分，如果不是说明不是子路径，可能存在slip注入。
+     * <p>
+     * 见http://blog.nsfocus.net/zip-slip-2/
+     *
+     * @param parentFile 父文件或目录
+     * @param file       子文件或目录
+     * @return 子文件或目录
+     * @throws IllegalArgumentException 检查创建的子文件不在父目录中抛出此异常
+     */
+    public static File checkSlip(File parentFile, File file) throws IllegalArgumentException {
         //TODO
         return null;
     }
